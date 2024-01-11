@@ -1,4 +1,4 @@
-## llama2 Statistic Gradient Decent (SGD)
+## llama2 Stochastic gradient descent (SGD)
 
 <p align="center">
   <img src="assets/FIN_TECH_LLAMA.png" width="300" height="300" alt="Fin Tech Llama">
