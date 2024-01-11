@@ -1,7 +1,7 @@
 ## llama2 Statistic Gradient Decent (SGD)
 
 <p align="center">
-  <img src="assets/FIN_TECH_LLAMA.png" width="300" height="300" alt="Cute Llama">
+  <img src="assets/FIN_TECH_LLAMA.png" width="300" height="300" alt="Fin Tech Llama">
 </p>
 
 Have you ever thought about training a llama architecture for classification problems?
@@ -9,12 +9,18 @@ Have you ever thought about training a llama architecture for classification pro
 Research has shown that very small LLMs can have surprisingly strong performance if you make the domain narrow enough (ref: [TinyStories](https://huggingface.co/datasets/roneneldan/TinyStories) paper).
 
 However, when it comes to classification problems, the commonly used Adam Optimizer for training Language Models might not be the best choice: 
-1. Ref: [Towards Theoretically Understanding Why SGD Generalizes Better Than ADAM in Deep Learning](https://arXiv:2010.05627v2) paper
-2. Ref: [Improving Generalization Performance by Switching from Adam to SGD](https://arXiv:1712.07628v1) paper
-3. Ref: [The Marginal Value of Adaptive Gradient Methods in Machine Learning Paper](https://arXiv:1705.08292v2]) paper
-4. Ref: [A Bounded Scheduling Method for Adaptive Gradient Methods](https://www.mdpi.com/2076-3417/9/17/3569)] paper
+1. Ref: [Towards Theoretically Understanding Why SGD Generalizes Better Than ADAM in Deep Learning](https://arXiv:2010.05627v2) paper.
+2. Ref: [Improving Generalization Performance by Switching from Adam to SGD](https://arXiv:1712.07628v1) paper.
+3. Ref: [The Marginal Value of Adaptive Gradient Methods in Machine Learning Paper](https://arXiv:1705.08292v2]) paper.
+4. Ref: [A Bounded Scheduling Method for Adaptive Gradient Methods](https://www.mdpi.com/2076-3417/9/17/3569)] paper.
 
-Although Statistic Gradient Decent (SDG) is a much slower training process and could require more epochs, it has been shown to generalize better on new data than Adam, making it a better choice for classification problems.
+As you can see in the image below, Statistic Gradient Decent (SDG) is a much slower training process and could require more epochs. It has been shown to generalize better on new data than Adam, making it a better choice for classification problems.
+
+As you can see in the image below, from [A Bounded Scheduling Method for Adaptive Gradient Methods](https://www.mdpi.com/2076-3417/9/17/3569)], Adam converges rapidly to a “sharp minima” while SGD converges to a “flat minima” and performs better on the test data. This improved generalize makes SGD a better choice for classification problems.
+
+<p align="center">
+  <img src="assets/FIN_TECH_LLAMA.png" alt="Source: A Bounded Scheduling Method for Adaptive Gradient Methods">
+</p>
 
 This repo is a "full-stack" train + inference solution for Llama 2 LLM in Python and Pytorch, with SDG and a focus on minimalism and simplicity. 
 
