@@ -14,9 +14,7 @@ However, when it comes to classification problems, the commonly used Adam Optimi
 3. Ref: [The Marginal Value of Adaptive Gradient Methods in Machine Learning Paper](https://arXiv:1705.08292v2]) paper.
 4. Ref: [A Bounded Scheduling Method for Adaptive Gradient Methods](https://www.mdpi.com/2076-3417/9/17/3569)] paper.
 
-As you can see in the image below, Statistic Gradient Decent (SDG) is a much slower training process and could require more epochs. It has been shown to generalize better on new data than Adam, making it a better choice for classification problems.
-
-As you can see in the image below, from [A Bounded Scheduling Method for Adaptive Gradient Methods](https://www.mdpi.com/2076-3417/9/17/3569)], Adam converges rapidly to a “sharp minima” while SGD converges to a “flat minima” and performs better on the test data. This improved generalize makes SGD a better choice for classification problems.
+As you can see in the image below, from [A Bounded Scheduling Method for Adaptive Gradient Methods](https://www.mdpi.com/2076-3417/9/17/3569)], Adam converges rapidly to a “sharp minima” while SGD converges to a “flat minima” and performs better on the test data. This improved generalization makes SGD a better choice for classification problems.
 
 <p align="center">
   <img src="assets/A Bounded Scheduling Method for Adaptive Gradient Methods.png" height="300" alt="Source: A Bounded Scheduling Method for Adaptive Gradient Methods">
