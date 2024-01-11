@@ -1,10 +1,29 @@
-## llama2.c
+## llama2 Statistic Gradient Decent (SGD)
 
 <p align="center">
   <img src="assets/FIN_TECH_LLAMA.png" width="300" height="300" alt="Cute Llama">
 </p>
 
-Have you ever wanted to inference a baby [Llama 2](https://ai.meta.com/llama/) model in pure C? No? Well, now you can!
+Have you ever thought about training a llama architecture for classification problems?
+
+Research has shown that very small LLMs can have surprisingly strong performance if you make the domain narrow enough (ref: [TinyStories](https://huggingface.co/datasets/roneneldan/TinyStories) paper).
+
+However, when it comes to classification problems, the commonly used Adam Optimizer for training Language Models might not be the best choice: 
+1. (ref: [https://towardsai.net/p/l/why-should-adam-optimizer-not-be-the-default-learning-algorithm] article), 
+2. (ref: [https://arXiv:2010.05627v2] Towards Theoretically Understanding Why SGD Generalizes Better Than ADAM in Deep Learning Paper), 
+3. (ref: [https://arXiv:1712.07628v1] Improving Generalization Performance by Switching from Adam to SGD Paper), 
+4. (ref: [https://arXiv:1705.08292v2] The Marginal Value of Adaptive Gradient Methods in Machine Learning Paper).
+5. (ref: [https://arXiv:1705.08292v2](https://www.mdpi.com/2076-3417/9/17/3569)] A Bounded Scheduling Method for Adaptive Gradient Methods Paper).
+
+Although Statistic Gradient Decent (SDG) is a much slower training process and could require more epochs, it has been shown to generalize better on new data than Adam, making it a better choice for classification problems.
+
+This repo is a "full-stack" train + inference solution for Llama 2 LLM in Python and Pytorch, with SDG and a focus on minimalism and simplicity. 
+
+Thank you to (ref: [https://github.com/karpathy/llama2.c] Andre Karpathy) for the initial training script and model card, which was modified for this project. 
+
+
+
+----
 
 Train the Llama 2 LLM architecture in PyTorch then inference it with one simple 700-line C file ([run.c](run.c)). You might think that you need many billion parameter LLMs to do anything useful, but in fact very small LLMs can have surprisingly strong performance if you make the domain narrow enough (ref: [TinyStories](https://huggingface.co/datasets/roneneldan/TinyStories) paper). This repo is a "fullstack" train + inference solution for Llama 2 LLM, with focus on minimalism and simplicity.
 
