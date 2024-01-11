@@ -19,7 +19,7 @@ As you can see in the image below, Statistic Gradient Decent (SDG) is a much slo
 As you can see in the image below, from [A Bounded Scheduling Method for Adaptive Gradient Methods](https://www.mdpi.com/2076-3417/9/17/3569)], Adam converges rapidly to a “sharp minima” while SGD converges to a “flat minima” and performs better on the test data. This improved generalize makes SGD a better choice for classification problems.
 
 <p align="center">
-  <img src="assets/FIN_TECH_LLAMA.png" alt="Source: A Bounded Scheduling Method for Adaptive Gradient Methods">
+  <img src="assets/A Bounded Scheduling Method for Adaptive Gradient Methods.png" height="300" alt="Source: A Bounded Scheduling Method for Adaptive Gradient Methods">
 </p>
 
 This repo is a "full-stack" train + inference solution for Llama 2 LLM in Python and Pytorch, with SDG and a focus on minimalism and simplicity. 
