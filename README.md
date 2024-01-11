@@ -26,6 +26,9 @@ Thank you to [Andre Karpathy](https://github.com/karpathy/llama2.c) for the init
 
 This repo is a "full-stack" train + inference solution for Llama 2 LLM in Python and Pytorch, with SDG and a focus on minimalism and simplicity. 
 
+
+# Below is the original README.md file from Andre's repository, which will be changed in the future as this project evolves:
+
 --------------------
 
 ## feel the magic
