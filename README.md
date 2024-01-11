@@ -12,30 +12,23 @@ However, when it comes to classification problems, the commonly used Adam Optimi
 1. Ref: [Towards Theoretically Understanding Why SGD Generalizes Better Than ADAM in Deep Learning](https://arXiv:2010.05627v2) paper.
 2. Ref: [Improving Generalization Performance by Switching from Adam to SGD](https://arXiv:1712.07628v1) paper.
 3. Ref: [The Marginal Value of Adaptive Gradient Methods in Machine Learning Paper](https://arXiv:1705.08292v2]) paper.
-4. Ref: [A Bounded Scheduling Method for Adaptive Gradient Methods](https://www.mdpi.com/2076-3417/9/17/3569)] paper.
+4. Ref: [A Bounded Scheduling Method for Adaptive Gradient Methods](https://www.mdpi.com/2076-3417/9/17/3569) paper.
 
-As you can see in the image below, from [A Bounded Scheduling Method for Adaptive Gradient Methods](https://www.mdpi.com/2076-3417/9/17/3569)], Adam converges rapidly to a “sharp minima” while SGD converges to a “flat minima” and performs better on the test data. This improved generalization makes SGD a better choice for classification problems.
+As you can see in the image below, from [A Bounded Scheduling Method for Adaptive Gradient Methods](https://www.mdpi.com/2076-3417/9/17/3569), Adam converges rapidly to a “sharp minima” while SGD converges to a “flat minima” and performs better on the test data. This improved generalization makes SGD a better choice for classification problems.
 
 <p align="center">
   <img src="assets/A Bounded Scheduling Method for Adaptive Gradient Methods.png" height="300" alt="Source: A Bounded Scheduling Method for Adaptive Gradient Methods">
 </p>
 
-This repo is a "full-stack" train + inference solution for Llama 2 LLM in Python and Pytorch, with SDG and a focus on minimalism and simplicity. 
+One additional advantage of SGD is it has a much smaller memory footprint than Adam. It enables you to train much larger models than you could train on the same GPU resources with Adam.
 
 Thank you to [Andre Karpathy](https://github.com/karpathy/llama2.c) for the initial training script and model card, which was modified for this project. 
 
+This repo is a "full-stack" train + inference solution for Llama 2 LLM in Python and Pytorch, with SDG and a focus on minimalism and simplicity. 
 
-----
-
-Train the Llama 2 LLM architecture in PyTorch then inference it with one simple 700-line C file ([run.c](run.c)). You might think that you need many billion parameter LLMs to do anything useful, but in fact very small LLMs can have surprisingly strong performance if you make the domain narrow enough (ref: [TinyStories](https://huggingface.co/datasets/roneneldan/TinyStories) paper). This repo is a "fullstack" train + inference solution for Llama 2 LLM, with focus on minimalism and simplicity.
-
-As the architecture is identical, you can also load and inference Meta's Llama 2 models. However, the current code only inferences models in fp32, so you will most likely not be able to productively load models larger than 7B. Work on model quantization is currently ongoing.
-
-Please note that this repo started recently as a fun weekend project: I took my earlier [nanoGPT](https://github.com/karpathy/nanoGPT), tuned it to implement the Llama-2 architecture instead of GPT-2, and the meat of it was writing the C inference engine in [run.c](run.c). So the project is young and moving quickly. Hat tip to the awesome [llama.cpp](https://github.com/ggerganov/llama.cpp) for inspiring this project. Compared to llama.cpp, I wanted something super simple, minimal, and educational so I chose to hard-code the Llama 2 architecture and just roll one inference file of pure C with no dependencies.
+--------------------
 
 ## feel the magic
-
-[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/karpathy/llama2.c/blob/master/run.ipynb)
 
 First, navigate to the folder where you keep your projects and clone this repository to this folder:
 
