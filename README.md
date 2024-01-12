@@ -1,4 +1,4 @@
-## llama2 Stochastic gradient descent (SGD)
+## FIN Llamma2 - Llama2 with Stochastic Gradient Descent (SGD) for Classification Problems
 
 <p align="center">
   <img src="assets/FIN_TECH_LLAMA.png" width="300" height="300" alt="Fin Tech Llama">
