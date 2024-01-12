@@ -26,7 +26,7 @@ One additional advantage of SGD is it has a much smaller memory footprint than A
 
 Thank you to [Andre Karpathy](https://github.com/karpathy/llama2.c) for the initial training script and model card, which was modified for this project. 
 
-This repo will become a "full-stack" train + inference solution for Llama 2 LLM in Python and Pytorch, with SDG and a focus on minimalism and simplicity. 
+This repo will become a "full-stack" train + inference solution for Llama 2 LLM in Python and Pytorch, with SGC and a focus on minimalism and simplicity. 
 
 
 
