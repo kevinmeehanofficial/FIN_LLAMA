@@ -20,9 +20,9 @@ As you can see in the image below, from [A Bounded Scheduling Method for Adaptiv
   <img src="assets/A Bounded Scheduling Method for Adaptive Gradient Methods.png" height="300" alt="Source: A Bounded Scheduling Method for Adaptive Gradient Methods">
 </p>
 
-I've learned through experimentation that when the foundation model was trained to a "sharp minima" with AdamW it is also more challenging to train the model on an ongoing basis. Since SGD is Stochastic in nature, models can be fine-tuned on an ongoing basis to market drift daily or weekly. 
+I've learned through experimentation that when the foundation model was trained to a "sharp minima" with AdamW, it was also more challenging to train the model on an ongoing basis. Since SGD is Stochastic in nature, models can be fine-tuned on an ongoing basis to market drift daily or weekly. 
 
-One additional advantage of SGD is it has a much smaller memory footprint than Adam. It enables you to train much larger models than you could train on the same GPU resources with Adam.
+One additional advantage of SGD is it has a much smaller memory footprint than Adam. It enables you to train much larger models than you could train on the same GPU resources with Adam. With a single 24 GB RTX 4090, you can train a foundational 1.3 Billion Parameter Model on 50 Billion Tokens of data in about a month (It would be much faster with a rack of GPUs purring). 
 
 Thank you to [Andre Karpathy](https://github.com/karpathy/llama2.c) for the initial training script and model card, which was modified for this project. 
 
