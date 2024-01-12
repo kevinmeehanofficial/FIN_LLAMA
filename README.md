@@ -4,7 +4,7 @@
   <img src="assets/FIN_TECH_LLAMA.png" width="300" height="300" alt="Fin Tech Llama">
 </p>
 
-Have you ever thought about training a llama for financial classification? 
+Have you ever thought about training a llama to work on Wall Street? 
 
 Research has shown that very small LLMs can have surprisingly strong performance if you make the domain narrow enough (ref: [TinyStories](https://huggingface.co/datasets/roneneldan/TinyStories) paper).
 
