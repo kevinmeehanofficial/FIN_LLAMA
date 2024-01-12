@@ -86,8 +86,8 @@ lr_decay_iters = max_iters  # should be ~= max_iters per Chinchilla
 min_lr = 0.0  # minimum learning rate, should be ~= learning_rate/10 per Chinchilla
 
 # validating checks
-assert vocab_source in ["llama2", "custom"]
-assert vocab_source == "custom" or vocab_size == 32000, "The vocab from Meta has 32K tokens"
+assert vocab_source in ["llama2", "custom_path"]
+assert vocab_source == "custom_path" or vocab_size == 32000, "The vocab from Meta has 32K tokens"
 
 # various inits, derived attributes, I/O setup
 ddp = int(os.environ.get("RANK", -1)) != -1  # is this a ddp run?
@@ -143,6 +143,18 @@ iter_batches = partial(
 iter_num = 0
 best_val_loss = 1e9
 
+def print_gpu_memory_usage(device_index=0):
+    if torch.cuda.is_available():
+        torch.cuda.synchronize(device_index)
+        total_memory = torch.cuda.get_device_properties(device_index).total_memory
+        allocated_memory = torch.cuda.memory_allocated(device_index)
+        cached_memory = torch.cuda.memory_reserved(device_index)
+        print(f"Total GPU Memory: {total_memory / 1e9:.2f} GB")
+        print(f"Allocated Memory: {allocated_memory / 1e9:.2f} GB")
+        print(f"Cached Memory: {cached_memory / 1e9:.2f} GB")
+    else:
+        print("CUDA is not available.")
+
 # model init
 model_args = dict(
     dim=dim,
@@ -154,50 +166,73 @@ model_args = dict(
     max_seq_len=max_seq_len,
     dropout=dropout,
 )  # start with model_args from command line
+
 if init_from == "scratch":
-    # init a new model from scratch
     print("Initializing a new model from scratch")
     gptconf = ModelArgs(**model_args)
     model = Transformer(gptconf)
-elif init_from == "resume":
+    model.to(device)
+    print("13")    
+    print_gpu_memory_usage()
+
+def move_to_device(tensor, device):
+    if tensor is not None:
+        return tensor.to(device)
+    return None
+
+if init_from == "resume":
     print(f"Resuming training from {out_dir}")
-    # resume training from a checkpoint.
     ckpt_path = os.path.join(out_dir, "ckpt.pt")
-    checkpoint = torch.load(ckpt_path, map_location=device)
+    checkpoint = torch.load(ckpt_path, map_location='cpu')  # Load to CPU first to avoid double memory usage
     checkpoint_model_args = checkpoint["model_args"]
-    # force these config attributes to be equal otherwise we can't even resume training
-    # the rest of the attributes (e.g. dropout) can stay as desired from command line
-    for k in ["dim", "n_layers", "n_heads", "n_kv_heads", "vocab_size", "multiple_of", "max_seq_len"]:
-        model_args[k] = checkpoint_model_args[k]
-    # create the model
+
+    # Create the model
     gptconf = ModelArgs(**model_args)
     model = Transformer(gptconf)
+
+    # Fix the keys of the state dictionary, if necessary
     state_dict = checkpoint["model"]
-    # fix the keys of the state dictionary :(
-    # honestly no idea how checkpoints sometimes get this prefix, have to debug more
     unwanted_prefix = "_orig_mod."
     for k, v in list(state_dict.items()):
         if k.startswith(unwanted_prefix):
-            state_dict[k[len(unwanted_prefix) :]] = state_dict.pop(k)
-    model.load_state_dict(state_dict)
-    iter_num = checkpoint["iter_num"]
-    best_val_loss = checkpoint["best_val_loss"]
-model.to(device)
+            state_dict[k[len(unwanted_prefix):]] = state_dict.pop(k)
 
+    # Move model to device before loading state_dict
+    model.to(device)
+    model.load_state_dict(state_dict)
+
+print("Model Loading Completed")
+print_gpu_memory_usage()
 # initialize a GradScaler. If enabled=False scaler is a no-op
 scaler = torch.cuda.amp.GradScaler(enabled=(dtype == "float16"))
+print("GradScaler initialsied")
+print_gpu_memory_usage()
 
 # optimizer
-optimizer = model.configure_optimizers(weight_decay, learning_rate, (beta1, beta2), device_type)
+optimizer = model.configure_optimizers(weight_decay, learning_rate)
 if init_from == "resume" and "optimizer" in checkpoint:
     optimizer.load_state_dict(checkpoint["optimizer"])
 checkpoint = None  # free up memory
+
+
+#optimizer = model.configure_optimizers(weight_decay, learning_rate)
+print("Optimizer Initialized")
+print_gpu_memory_usage()
+#if init_from == "resume" and "optimizer" in checkpoint and checkpoint["optimizer_state"] == 'SGD':
+#    optimizer.load_state_dict(checkpoint["optimizer"])
+#checkpoint = None  # free up memory
 
 # compile the model
 if compile:
     print("compiling the model... (takes a ~minute)")
     unoptimized_model = model
     model = torch.compile(model)  # requires PyTorch 2.0
+print_gpu_memory_usage()
+
+print("emptying cache")
+torch.cuda.empty_cache() # NEW ADDITION
+print("catch emptied")
+print_gpu_memory_usage()
 
 # wrap model into DDP container
 if ddp:
@@ -206,6 +241,9 @@ if ddp:
     prefix = "_orig_mod." if compile else ""
     model._ddp_params_and_buffers_to_ignore = {prefix + "freqs_cis"}
     model = DDP(model, device_ids=[ddp_local_rank])
+
+print("DPP")
+print_gpu_memory_usage()
 
 # helps estimate an arbitrarily accurate loss over either split using many batches
 @torch.no_grad()
@@ -224,6 +262,7 @@ def estimate_loss():
         out[split] = losses.mean()
     model.train()
     return out
+print_gpu_memory_usage()
 
 # learning rate decay scheduler (cosine with warmup)
 def get_lr(it):
@@ -244,6 +283,8 @@ if wandb_log and master_process:
     import wandb
     wandb.init(project=wandb_project, name=wandb_run_name, config=config)
 
+
+#cumulative_avg_seq_length = 0  # Initialize
 # training loop
 train_batch_iter = iter_batches(split="train")
 X, Y = next(train_batch_iter)  # fetch the very first batch
@@ -271,6 +312,8 @@ while True:
                         "loss/val": losses["val"],
                         "lr": lr,
                         "mfu": running_mfu * 100,  # convert to percentage
+                        #"cumulative_average_sequence_length": cumulative_avg_seq_length,  # existing line
+                        #"current_iteration_average_sequence_length": average_sequence_length  # new line
                     }, step = iter_num
                 )
             except Exception as e:
@@ -288,7 +331,7 @@ while True:
                 }
                 print(f"saving checkpoint to {out_dir}")
                 torch.save(checkpoint, os.path.join(out_dir, "ckpt.pt"))
-                model_export(raw_model, os.path.join(out_dir, "model.bin"), version=0)
+                # model_export(raw_model, os.path.join(out_dir, "model.bin"), version=0)
     if iter_num == 0 and eval_only:
         break
 
@@ -303,12 +346,15 @@ while True:
             model.require_backward_grad_sync = micro_step == gradient_accumulation_steps - 1
         with ctx:
             logits = model(X, Y)
+            #logits, average_sequence_length = model(X, Y)
             loss = raw_model.last_loss
             loss = loss / gradient_accumulation_steps
         # immediately async prefetch next batch while model is doing the forward pass on the GPU
         X, Y = next(train_batch_iter)
         # backward pass, with gradient scaling if training in fp16
         scaler.scale(loss).backward()
+        # Update the cumulative average sequence length
+        #cumulative_avg_seq_length = (cumulative_avg_seq_length * local_iter_num + average_sequence_length) / (local_iter_num + 1)        
     # clip the gradient
     if grad_clip != 0.0:
         scaler.unscale_(optimizer)
@@ -322,7 +368,8 @@ while True:
     # timing and logging
     t1 = time.time()
     dt = t1 - t0
-    t0 = t1
+    
+
     if iter_num % log_interval == 0 and master_process:
         # get loss as float, scale up due to the divide above. note: this is a CPU-GPU sync point
         lossf = loss.item() * gradient_accumulation_steps
@@ -330,8 +377,10 @@ while True:
             mfu = raw_model.estimate_mfu(batch_size * gradient_accumulation_steps, dt)
             running_mfu = mfu if running_mfu == -1.0 else 0.9 * running_mfu + 0.1 * mfu
         print(
-            f"{iter_num} | loss {lossf:.4f} | lr {lr:e} | {dt*1000:.2f}ms | mfu {running_mfu*100:.2f}%"
+            f"{iter_num} | loss {lossf:.4f} | lr {lr:e} | {dt*1000:.2f}ms | mfu {running_mfu*100:.2f}% | "
+            #f"cumulative_avg_seq_length {cumulative_avg_seq_length:.2f} | current_iter_avg_seq_length {average_sequence_length:.2f}"
         )
+
     iter_num += 1
     local_iter_num += 1
 
@@ -341,3 +390,4 @@ while True:
 
 if ddp:
     destroy_process_group()
+
