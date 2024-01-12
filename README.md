@@ -29,7 +29,7 @@ Thank you to [Andre Karpathy](https://github.com/karpathy/llama2.c) for the init
 This repo will become a "full-stack" train + inference solution for Llama 2 LLM in Python and Pytorch, with SGC and a focus on minimalism and simplicity. 
 
 
-## Training
+## training
 
 First, navigate to the folder where you keep your projects and clone this repository to this folder:
 
