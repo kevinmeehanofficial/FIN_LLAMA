@@ -43,7 +43,7 @@ Then, open the repository folder:
 cd FIN_LLAMA
 ```
 
-You will need to create two .bin files that contain tokenized data. I will be releasing a tokenizer I built for this in the near future, but just make sure that the dtype=np.uint16. Store the val.bin and train.bin files in a subdirectory named "data".
+You will need to create two .bin files that contain tokenized data. I will release a tokenizer I built for this soon, but just make sure that the dtype=np.uint16. Store the val.bin and train.bin files in a subdirectory named "data."
 
 Once data is cleaned, tokenized, and prepared, then train our model:
 
@@ -57,7 +57,7 @@ I will also release a Redis interface script for cloud deployment of the trained
 
 ## custom tokenizers
 
-With this script, you can use any tokenizer you want. I used a customized version of Tiktoken, which I optimized for financial data (more on this in the near future). As long as you create a train.bin and val.bin file with tokens in dtype=np.uint16 format, and store them in a subdirectory called data; feel free to use whatever you want. Sentence piece is commonly used for Language Models aswell.
+With this script, you can use any tokenizer you want. I used a customized version of Tiktoken, which I optimized for financial data (more on this in the near future) as long as you create a train.bin and val.bin file with tokens in dtype=np.uint16 format, and store them in a subdirectory called data; feel free to use whatever you want. Sentence pieces are commonly used for language models as well.
 
 ## unsorted todos
 
